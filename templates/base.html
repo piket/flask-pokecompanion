@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Poké-Companion{% block title %}{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,400italic,500,500italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/js/materialize.min.js"></script>
+</head>
+<body>
+    <nav>
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo">Poké-Companion</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href="/">Home</a></li>
+        <!--<li><a href="/view"></a></li>-->
+        <!--<li><a href="collapsible.html">JavaScript</a></li>-->
+      </ul>
+    </div>
+  </nav>
+  
+  <div class="container">
+      {% block content %}{% endblock %}
+  </div>
+  
+  {% block scripts %}{% endblock %}
+</body>
+</html>
