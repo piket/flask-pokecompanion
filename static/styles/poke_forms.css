@@ -1,0 +1,16 @@
+input[type=number].poke-input {
+    border: 1px solid black;
+    width: 2.7em;
+    height: 1.2em;
+    padding: .1em;
+    margin: .1em;
+}
+
+.display-box {
+    margin: .5em;
+    padding: .5em;
+}
+
+.stat-block {
+    text-align: right;
+}
