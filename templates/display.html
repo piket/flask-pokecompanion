@@ -1,0 +1,232 @@
+{% extends "index.html" %}
+
+{% block display %}
+    <div class="display-box red lighten-1" id="pokemon-box-{{x}}">
+                <!--{# <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}"> #}-->
+        <div class="row">
+            <form class="select-pokemon" id="{{x}}" action="/api/pokemon">
+                <div class="input-field col s10 m8">
+                    <input type="text" name="pokemon" class="pokemon-name" placeholder="Select a Pokémon">
+                    <ul class="dropdown"></ul>
+                    <!--<label for="pokemon" class="display-label">Select a Pokémon</label>-->
+                </div>
+                <div class="input-field col s2 m4">
+                    <button class="waves-effect waves-light btn blue" type="submit">Find Pokemon</button>
+                </div>
+            </form>
+        </div>
+        <div class="display-stats" id="pokemon-{{x}}">
+            <input type="hidden" id="pokemon-exist-{{x}}" value="0">
+            <div class="row">
+                <p class="center">Base Stats</p>
+                <div class="col s5 m5 stat-block">
+                    <div class="row">
+                        <div class="col s6">
+                            <label for="catch_rate-base" class="poke-stat-label">Catch</label>
+                            <input disabled type="number" class="poke-input general-stat catch_rate" name="catch_rate-base" value="0">
+                        </div>
+                        <div class="col s6">
+                            <label for="gender_ratio-base" class="poke-stat-label">Gender</label>
+                            <input disabled type="number" class="poke-input general-stat gender_ratio" name="gender_ratio-base" value="0">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6">
+                            <label for="height-base" class="poke-stat-label">Height</label>
+                            <input disabled type="number" class="poke-input general-stat height" name="height-base" value="0">
+                        </div>
+                        <div class="col s6">
+                            <label for="weight-base" class="poke-stat-label">Weight</label>
+                            <input disabled type="number" class="poke-input general-stat weight" name="weight-base" value="0">
+                        </div>
+                    </div>
+                </div>
+                <div id="pokemon-{{x}}-base-stats" class="col s7 m7 stat-block">
+                    <div class="row">
+                        <div class="col s4">
+                            <label for="hp-base" class="poke-stat-label">HP</label>
+                            <input disabled type="number" class="poke-input base-stat hp" name="hp-base" value="0">
+                        </div>
+                        <div class="col s4">
+                            <label for="attack-base" class="poke-stat-label">Atk</label>
+                            <input disabled type="number" class="poke-input base-stat attack" name="attack-base" value="0">
+                        </div>
+                        <div class="col s4">
+                            <label for="defense-base" class="poke-stat-label">Def</label>
+                            <input disabled type="number" class="poke-input base-stat defense" name="defense-base" value="0">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s4">
+                            <label for="sp_attack-base" class="poke-stat-label">Sp Atk</label>
+                            <input disabled type="number" class="poke-input base-stat sp_attack" name="sp_attack-base" value="0">
+                        </div>
+                        <div class="col s4">
+                            <label for="sp_defense-base" class="poke-stat-label">Sp Def</label>
+                            <input disabled type="number" class="poke-input base-stat sp_defense" name="sp_defense-base" value="0">
+                        </div>
+                        <div class="col s4">
+                            <label for="speed-base" class="poke-stat-label">Spd</label>
+                            <input disabled type="number" class="poke-input base-stat speed" name="speed-base" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <div class="row center">
+                        <div class="col s6">
+                            <button class="waves-effect waves-light btn blue show-evs center" data-display="pokemon-{{x}}-evs" data-pokemon-id="{{x}}">Edit EVs</button>
+                        </div>
+                        <div class="col s6">
+                            <button class="waves-effect waves-light btn blue show-ivs center" data-display="pokemon-{{x}}-ivs" data-pokemon-id="{{x}}">Edit IVs</button>
+                        </div>
+                    </div>
+                    <div id="pokemon-{{x}}-evs" class="ev-display stat-block">
+                        <div class="row">
+                            <div class="col s3">
+                                <button class="waves-effect waves-light btn blue max-btn" data-ref="{{x}} .ev-stat" data-val="255">Max</button>
+                            </div>
+                            <div class="col s3">
+                                <label for="hp-ev" class="poke-stat-label">HP</label>
+                                <input type="number" class="poke-input ev-stat hp" data-id="{{x}}" name="hp-ev" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="attack-ev" class="poke-stat-label">Atk</label>
+                                <input type="number" class="poke-input ev-stat attack" data-id="{{x}}" name="attack-ev" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="defense-ev" class="poke-stat-label">Def</label>
+                                <input type="number" class="poke-input ev-stat defense" data-id="{{x}}" name="defense-ev" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s3">
+                                <button class="waves-effect waves-light btn blue reset-btn" data-ref="{{x}} .ev-stat" data-val="0">Reset</button>
+                            </div>
+                            <div class="col s3">
+                                <label for="sp_attack-ev" class="poke-stat-label">SpAtk</label>
+                                <input type="number" class="poke-input ev-stat sp_attack" data-id="{{x}}" name="sp_attack-ev" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="sp_defense-ev" class="poke-stat-label">SpDef</label>
+                                <input type="number" class="poke-input ev-stat sp_defense" data-id="{{x}}" name="sp_defense-ev" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="speed-ev" class="poke-stat-label">Spd</label>
+                                <input type="number" class="poke-input ev-stat speed" data-id="{{x}}" name="speed-ev" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="pokemon-{{x}}-ivs" class="iv-display stat-block">
+                        <div class="row">
+                            <div class="col s3">
+                                <button class="waves-effect waves-light btn blue max-btn" data-ref="{{x}} .iv-stat" data-val="31">Max</button>
+                            </div>
+                            <div class="col s3">
+                                <label for="hp-iv" class="poke-stat-label">HP</label>
+                                <input type="number" class="poke-input iv-stat hp" data-id="{{x}}" name="hp-iv" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="attack-iv" class="poke-stat-label">Atk</label>
+                                <input type="number" class="poke-input iv-stat attack" data-id="{{x}}" name="attack-iv" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="defense-iv" class="poke-stat-label">Def</label>
+                                <input type="number" class="poke-input iv-stat defense" data-id="{{x}}" name="defense-iv" value="0">
+                            </div>
+                        <div class="row">
+                        </div>
+                            <div class="col s3">
+                                <button class="waves-effect waves-light btn blue reset-btn" data-ref="{{x}} .iv-stat" data-val="0">Reset</button>
+                            </div>
+                            <div class="col s3">
+                                <label for="sp_attack-iv" class="poke-stat-label">SpAtk</label>
+                                <input type="number" class="poke-input iv-stat sp_attack" data-id="{{x}}" name="sp_attack-iv" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="sp_defense-iv" class="poke-stat-label">SpDef</label>
+                                <input type="number" class="poke-input iv-stat sp_defense" data-id="{{x}}" name="sp_defense-iv" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="speed-iv" class="poke-stat-label">Spd</label>
+                                <input type="number" class="poke-input iv-stat speed" data-id="{{x}}" name="speed-iv" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s5 m5">
+                    <label for="level" class="poke-stat-label">Level</label>
+                    <input type="number" id="pokemon-{{x}}-level" data-id="{{x}}" class="poke-input level" name="level" value="50">
+                </div>
+                <div class="col s7 m7">
+                    <select name="nature" id="pokemon-{{x}}-nature" data-id="{{x}}" class="browser-default nature">
+                        <option selected class="default-selection" value="">Nature</option>
+                        {% for nature in natures %}
+                        <option value="{{nature.id}}" data-bonus="{{nature.bonus}}" data-penalty="{{nature.penalty}}">{{nature.name.capitalize()}} {{nature.reference()}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div id="pokemon-{{x}}-level-stats">
+                <div class="row stat-block">
+                    <div class="col s4">
+                        <label for="hp-level" class="poke-stat-label">HP</label>
+                        <input disabled type="number" class="poke-input level-stat hp" data-name="hp" name="hp-level" value="0">
+                    </div>
+                    <div class="col s4">
+                        <label for="attack-level" class="poke-stat-label">Atk</label>
+                        <input disabled type="number" class="poke-input level-stat attack" data-name="attack" name="attack-level" value="0">
+                    </div>
+                    <div class="col s4">
+                        <label for="defense-level" class="poke-stat-label">Def</label>
+                        <input disabled type="number" class="poke-input level-stat defense" data-name="defense" name="defense-level" value="0">
+                    </div>
+                </div>
+                <div class="row stat-block">
+                    <div class="col s4">
+                        <label for="sp_attack-level" class="poke-stat-label">Sp Atk</label>
+                        <input disabled type="number" class="poke-input level-stat sp_attack" data-name="sp_attack" name="sp_attack-level" value="0">
+                    </div>
+                    <div class="col s4">
+                        <label for="sp_defense-level" class="poke-stat-label">Sp Def</label>
+                        <input disabled type="number" class="poke-input level-stat sp_defense" data-name="sp_defense" name="sp_defense-level" value="0">
+                    </div>
+                    <div class="col s4">
+                        <label for="speed-level" class="poke-stat-label">Spd</label>
+                        <input disabled type="number" class="poke-input level-stat speed" data-name="speed" name="speed-level" value="0">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m6 input-field">
+                    <input disabled type="text" class="type" name="type1" value="">
+                </div>
+                <div class="col s12 m6 input-field">
+                    <input disabled type="text" class="type" name="type2" value="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 input-field">
+                    <select name="abilities" class="browser-default abilities"></select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s6 input-field">
+                    <select name="moves1" class="browser-default moves"></select>
+                </div>
+                <div class="col s6 input-field">
+                    <select name="moves2" class="browser-default moves"></select>
+                </div>
+                <div class="col s6 input-field">
+                    <select name="moves3" class="browser-default moves"></select>
+                </div>
+                <div class="col s6 input-field">
+                    <select name="moves4" class="browser-default moves"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

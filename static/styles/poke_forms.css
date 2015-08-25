@@ -14,3 +14,61 @@ input[type=number].poke-input {
 .stat-block {
     text-align: right;
 }
+
+.pokemon-name {
+    position: relative;
+}
+
+.dropdown {
+    overflow: auto;
+    max-height: 10em;
+    position: absolute;
+    top: 2em;
+    left: .5em;
+    padding: .1em;
+    width: 99%;
+    background-color: rgba(255,255,255,1);
+}
+
+.pokename-dropdown:hover {
+    cursor: pointer;
+}
+
+.hover-name {
+    background-color: lightblue;
+}
+
+.poke-stat-label {
+    color: black;
+}
+
+input[type=text] {
+    border-color: black;
+}
+
+input[type=text]:focus {
+    border-color: black;
+}
+
+input[type=text]:disabled {
+    border-color: black;
+    color: black;
+}
+
+input[type=number]:disabled {
+    color: black;
+}
+
+.display-label {
+    color: black !important;
+}
+
+.default-selection {
+    color: grey;
+}
+
+/*.max-btn, .reset-btn {
+    padding-left: .3em;
+    padding-right: .3em;
+    font-size: 0.5em;
+}*/
