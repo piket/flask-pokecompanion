@@ -5,6 +5,7 @@ import requests
 import simplejson as json
 from bs4 import BeautifulSoup
 import re
+from random import random, uniform
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
@@ -44,13 +45,14 @@ def initMove(move, move_link):
             category = t.find('a',title=regCategory)
             if not move_type:
                 return False
-        return False
+        else:
+            return False
 
     move_stats = json.loads(requests.get('http://pokeapi.co'+move_link).text)
-    new_move = Move(name=move_stats['name'], type=move_type.text.strip(), category=category.text.strip(), power=move_stats['power'], accuracy=move_stats['accuracy'], pp=move_stats['pp'], effect=move_stats['description'])
+    new_move = Move(name=m.replace('_',' '), type=move_type.text.strip(), category=category.text.strip(), power=move_stats['power'], accuracy=move_stats['accuracy'], pp=move_stats['pp'], effect=move_stats['description'])
     return new_move
 
-def getTypeMatchUp(move_type, target_types):
+def typeMatchUp(move_type, target_types):
     match_up = {
         'normal': {
             'rock':0.5,
@@ -209,9 +211,57 @@ def getTypeMatchUp(move_type, target_types):
             'dark':2
         },
     }
-    mod = match_up[move_type][target_types[0]] if target_types[0] in match_up[move_type] else 1
-    mod *= match_up[move_type][target_type[1]] if target_types[1] and target_types[1] in match_up[move_type] else 1
+    mod = match_up[move_type.lower()][target_types[0].lower()] if target_types[0].lower() in match_up[move_type.lower()] else 1
+    mod *= match_up[move_type.lower()][target_types[1].lower()] if len(target_types) > 1 and target_types[1].lower() in match_up[move_type.lower()] else 1
     return mod
+
+def generate_pokemon(pokemon_name):
+    pokemon_name = pokemon_name.lower()
+    if(pokemon_name != ''):
+        pokemon = Pokemon.query.filter_by(name=pokemon_name).first()
+        if pokemon is None:
+            json_data = requests.get('http://pokeapi.co/api/v1/pokemon/' + pokemon_name).text
+
+            if json_data == '':
+                return None
+            else:
+                pokestats = json.loads(json_data)
+                print("Pokestats: {}".format(pokestats))
+                stats = {
+                    'hp': pokestats['hp'],
+                    'attack': pokestats['attack'],
+                    'defense': pokestats['defense'],
+                    'sp_attack': pokestats['sp_atk'],
+                    'sp_defense': pokestats['sp_def'],
+                    'speed': pokestats['speed'],
+                    'height': pokestats['height'],
+                    'weight': pokestats['weight'],
+                    'types': pullStats(pokestats['types']),
+                    'abilities': pullStats(pokestats['abilities']),
+                    'gender_ratio': pokestats['male_female_ratio'],
+                    'catch_rate': pokestats['catch_rate'],
+                    'moves': pullStats(pokestats['moves']),
+                }
+                print("Stats: {}".format(stats))
+                pokemon = Pokemon(name=pokemon_name, stats=stats)
+                db.session.add(pokemon)
+
+                for move in pokestats['moves']:
+                    m = Move.query.filter_by(name=move['name']).first()
+                    if m:
+                        pokemon.moves.append(m)
+                    else:
+                        m = initMove(move['name'], move['resource_uri'])
+                        if m:
+                            pokemon.moves.append(m)
+
+                db.session.commit()
+                print("Pokemon model: {}".format(pokemon))
+                return pokemon
+        else:
+            return pokemon
+    else:
+        return None
 
 @app.route('/')
 def index():
@@ -231,66 +281,48 @@ def get_pokemon():
     pokemon_name = request.form['pokemon'].lower()
 
     print("Pokemon: {}".format(pokemon_name))
+    pokemon = generate_pokemon(pokemon_name)
 
-    if(pokemon_name != ''):
-        pokemon = Pokemon.query.filter_by(name=pokemon_name).first()
-        if pokemon is None:
-            pokestats = json.loads(requests.get('http://pokeapi.co/api/v1/pokemon/' + pokemon_name).text)
-            print("Pokestats: {}".format(pokestats))
-            stats = {
-                'hp': pokestats['hp'],
-                'attack': pokestats['attack'],
-                'defense': pokestats['defense'],
-                'sp_attack': pokestats['sp_atk'],
-                'sp_defense': pokestats['sp_def'],
-                'speed': pokestats['speed'],
-                'height': pokestats['height'],
-                'weight': pokestats['weight'],
-                'types': pullStats(pokestats['types']),
-                'abilities': pullStats(pokestats['abilities']),
-                'gender_ratio': pokestats['male_female_ratio'],
-                'catch_rate': pokestats['catch_rate'],
-                'moves': pullStats(pokestats['moves']),
-            }
-            print("Stats: {}".format(stats))
-            pokemon = Pokemon(name=pokemon_name, stats=stats)
-            db.session.add(pokemon)
-
-            for move in pokestats['moves']:
-                m = Move.query.filter_by(name=move['name']).first()
-                if m:
-                    pokemon.moves.append(m)
-                else:
-                    m = initMove(move['name'], move['resource_uri'])
-                    if m:
-                        pokemon.moves.append(m)
-
-            db.session.commit()
-            print("Pokemon model: {}".format(pokemon))
+    if pokemon:
         pokejson = pokemon.serialize()
         pokejson['form'] = request.form['formId']
+        pokejson['moves'] = pokemon.get_moves()
         return json.dumps(pokejson)
     else:
         return 'Error'
 
-@app.route('/api/attack', methods=['PUT'])
+@app.route('/api/attack', methods=['POST'])
 def battle():
-    move = Move.query.filter_by(name=request.form['move']).first()
-    origin = Pokemon.query.filter_by(id=request.form['origin']['id']).first()
-    target = Pokemon.query.filter_by(id=request.form['target']['id']).first()
+    # print(request)
+    # data = request.get_json(silent=True,force=True)
+    data = request.form
+    print(request.mimetype)
+    print("Data: {}".format(data))
+    move = Move.query.filter_by(name=data['move']).first()
+    print("move {}".format(move))
+    origin = Pokemon.query.filter_by(id=data['origin[id]']).first()
+    print("origin {}".format(origin))
+    target = Pokemon.query.filter_by(id=data['target[id]']).first()
+    print("target {}".format(target))
 
-    level = request.form['origin']['level']
-    accuracy = request.form['origin']['accuracy'] if 'accuracy' in request.form['origin'] else 100
-    evasion = request.form['target']['evasion'] if 'evasion' in request.form['target'] else 100
-    crit_chance = request.form['target']['crit_chance'] if 'crit_chance' in request.form['target'] else 16
+    # print("move {}, origin {}, target {}".format(move,origin,target))
+
+    level = int(data['origin[level]'])
+    accuracy = float(data['origin[accuracy]']) if 'origin[accuracy]' in data else 100
+    evasion = float(data['target[evasion]']) if 'target[evasion]' in data else 100
+    crit_chance = int(data['origin[crit_chance]']) if 'origin[crit_chance]' in data else 16
 
     if not move:
-        return False
+        print('No move: {}'.format(move))
+        return json.dumps({'response':False})
     else:
+        print("Move: {}".format(move))
         result = {
-            'origin': request.form['origin']['name'],
-            'target': request.form['target']['name'],
-            'move': move.name
+            'origin': data['origin[name]'],
+            'target': data['target[name]'],
+            'move': move.name,
+            'response': True,
+            'crit': False
         }
 
         hit = move.accuracy * (accuracy/evasion)
@@ -304,24 +336,29 @@ def battle():
             result['crit'] = True
             mod = 1.5
 
+        print("Crit? {} Mod: {}".format(result['crit'],mod))
+
         mod *= 1.5 if move.type in origin.stats['types'] else 1
         mod *= typeMatchUp(move.type,target.stats['types'])
         mod *= uniform(0.85,1)
 
+        print("Category: {}".format(move.category))
+
         if move.category == 'Physical' and move.power > 0:
-            attack = request.form['origin']['attack']
-            defense = request.form['target']['defense']
+            attack = int(request.form['origin[attack]'])
+            defense = int(request.form['target[defense]'])
             damage = (((((2 * level) + 10)/250) * (attack/defense) * move.power) + 2) * mod
             result['result'] = 'hit for {} damage'.format(int(damage))
         elif move.category == 'Special' and move.power > 0:
-            sp_attack = request.form['origin']['sp_attack']
-            sp_defense = request.form['target']['sp_defense']
+            sp_attack = int(request.form['origin[sp_attack]'])
+            sp_defense = int(request.form['target[sp_defense]'])
             damage = (((((2 * level) + 10)/250) * (sp_attack/sp_defense) * move.power) + 2) * mod
             result['result'] = 'hit for {} damage'.format(int(damage))
         elif move.category == 'Status':
             result['result'] = move.effect
         else:
-            result = False
+            print('Invalid category: {}'.format(move.category))
+            result = {'response':False}
 
         return json.dumps(result)
 

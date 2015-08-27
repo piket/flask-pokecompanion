@@ -15,6 +15,7 @@
                 </div>
             </form>
         </div>
+        <div id="pokemon-display-{{x}}">
         <div class="display-stats" id="pokemon-{{x}}">
             <input type="hidden" id="pokemon-exist-{{x}}" value="0">
             <div class="row">
@@ -75,11 +76,14 @@
             <div class="row">
                 <div class="col s12">
                     <div class="row center">
-                        <div class="col s6">
+                        <div class="col s4">
                             <button class="waves-effect waves-light btn blue show-evs center" data-display="pokemon-{{x}}-evs" data-pokemon-id="{{x}}">Edit EVs</button>
                         </div>
-                        <div class="col s6">
+                        <div class="col s4">
                             <button class="waves-effect waves-light btn blue show-ivs center" data-display="pokemon-{{x}}-ivs" data-pokemon-id="{{x}}">Edit IVs</button>
+                        </div>
+                        <div class="col s4">
+                            <button class="waves-effect waves-light btn blue show-stages center" data-display="pokemon-{{x}}-stages" data-pokemon-id="{{x}}">Edit Stages</button>
                         </div>
                     </div>
                     <div id="pokemon-{{x}}-evs" class="ev-display stat-block">
@@ -154,6 +158,44 @@
                             </div>
                         </div>
                     </div>
+                    <div id="pokemon-{{x}}-stages" class="stage-display stat-block">
+                        <div class="row">
+                            <div class="col s3">
+                                <label for="attack-stage" class="poke-stat-label">Atk</label>
+                                <input type="number" class="poke-input stage-stat attack" data-id="{{x}}" name="attack-stage" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="defense-stage" class="poke-stat-label">Def</label>
+                                <input type="number" class="poke-input stage-stat defense" data-id="{{x}}" name="defense-stage" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="sp_attack-stage" class="poke-stat-label">SpAtk</label>
+                                <input type="number" class="poke-input stage-stat sp_attack" data-id="{{x}}" name="sp_attack-stage" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="accuracy-stage" class="poke-stat-label">Acc</label>
+                                <input type="number" class="poke-input stage-stat accuracy" data-id="{{x}}" name="accuracy-stage" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s3">
+                                <label for="sp_defense-stage" class="poke-stat-label">SpDef</label>
+                                <input type="number" class="poke-input stage-stat sp_defense" data-id="{{x}}" name="sp_defense-stage" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="speed-stage" class="poke-stat-label">Spd</label>
+                                <input type="number" class="poke-input stage-stat speed" data-id="{{x}}" name="speed-stage" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="critical-stage" class="poke-stat-label">Crit</label>
+                                <input type="number" class="poke-input stage-stat critical" data-id="{{x}}" name="critical-stage" value="0">
+                            </div>
+                            <div class="col s3">
+                                <label for="evasion-stage" class="poke-stat-label">Eva</label>
+                                <input type="number" class="poke-input stage-stat evasion" data-id="{{x}}" name="evasion-stage" value="0">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -215,18 +257,57 @@
             </div>
             <div class="row">
                 <div class="col s6 input-field">
-                    <select name="moves1" class="browser-default moves"></select>
+                    <select name="moves1" id="pokemon-{{x}}-moves1" class="browser-default moves"></select>
                 </div>
-                <div class="col s6 input-field">
-                    <select name="moves2" class="browser-default moves"></select>
+                <div class="trigger-display">
+                    <div class="col s3 input-field">
+                        <button class="waves-effect waves-light blue trigger" data-move="{{x}}-moves1">Attack</button>
+                    </div>
+                    <div class="col s3 input-field">
+                        <select id="target-{{x}}-moves1" class="browser-default target"></select>
+                    </div>
                 </div>
+            </div>
+            <div class="row">
                 <div class="col s6 input-field">
-                    <select name="moves3" class="browser-default moves"></select>
+                    <select name="moves2" id="pokemon-{{x}}-moves2" class="browser-default moves"></select>
                 </div>
+                <div class="trigger-display">
+                    <div class="col s3 input-field">
+                        <button class="waves-effect waves-light blue trigger" data-move="{{x}}-moves2">Attack</button>
+                    </div>
+                    <div class="col s3 input-field">
+                        <select id="target-{{x}}-moves2" class="browser-default target"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col s6 input-field">
-                    <select name="moves4" class="browser-default moves"></select>
+                    <select name="moves3" id="pokemon-{{x}}-moves3" class="browser-default moves"></select>
+                </div>
+                <div class="trigger-display">
+                    <div class="col s3 input-field">
+                        <button class="waves-effect waves-light blue trigger" data-move="{{x}}-moves3">Attack</button>
+                    </div>
+                    <div class="col s3 input-field">
+                        <select id="target-{{x}}-moves3" class="browser-default target"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s6 input-field">
+                    <select name="moves4" id="pokemon-{{x}}-moves4" class="browser-default moves"></select>
+                </div>
+                <div class="trigger-display">
+                    <div class="col s3 input-field">
+                        <button class="waves-effect waves-light blue trigger" data-move="{{x}}-moves3">Attack</button>
+                    </div>
+                    <div class="col s3 input-field">
+                        <select id="target-{{x}}-moves4" class="browser-default target"></select>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 {% endblock %}

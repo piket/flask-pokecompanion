@@ -25,8 +25,16 @@ class Pokemon(db.Model):
     def serialize(self):
         return {
             'name': self.name,
-            'stats': self.stats
+            'stats': self.stats,
+            'id': self.id
         }
+
+    def get_moves(self):
+        arr = []
+        for move in self.moves:
+            arr.append(move.name)
+        arr.sort()
+        return arr
 
 class Nature(db.Model):
     __tablename__ = 'natures'

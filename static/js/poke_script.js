@@ -13,7 +13,8 @@ $(function() {
         input.val(item.text());
         dropdown.hide();
         dropdown.html('');
-        // debugger;
+        // input.sumbit();
+        dropdown.parent().parent().trigger('submit');
     });
 
     $('.dropdown').on('mouseenter','li',function() {
@@ -93,6 +94,7 @@ $(function() {
 
     var evDisplays = $('.ev-display').hide();
     var ivDisplays = $('.iv-display').hide();
+    var stageDisplays = $('.stage-display').hide();
 
     var showOtherStats = function() {
         // evDisplays.slideUp();
@@ -113,6 +115,7 @@ $(function() {
 
     $('.show-evs').click(showOtherStats);
     $('.show-ivs').click(showOtherStats);
+    $('.show-stages').click(showOtherStats);
 
     var changeAllVals = function() {
         var ref = $(this).attr('data-ref');
@@ -131,15 +134,19 @@ $(function() {
             enterFlag = false;
         } else {
             var form = $(this);
+            form.find('.dropdown').hide().html('');
             console.log($(location).attr('href') + form.attr('action'))
             $.ajax({
                 url: form.attr('action'),
                 method: 'POST',
+                // dataType: 'json',
                 data: form.serialize() + "&formId=" + form.attr('id')
             }).done(function(result) {
                 console.log(result);
                 var pokemon = JSON.parse(result);
                 renderPokeStats(pokemon);
+                $('#pokemon-exist-'+pokemon.form).val(pokemon.id);
+                $('.target').append('<option value="'+pokemon.form+'.'+pokemon.id+'">'+pokemon.name[0].toUpperCase() + pokemon.name.substr(1)+'</option>');
             }).error(function(err) {
                 console.log("ERROR:",err);
             })
@@ -152,6 +159,7 @@ $(function() {
         var baseStats = $('#pokemon-'+pokeId+'-base-stats');
         var ivs = $('#pokemon-'+pokeId+'-ivs');
         var evs = $('#pokemon-'+pokeId+'-evs');
+        var stages = $('#pokemon-'+pokeId+'-stages');
         var nature = $('#pokemon-'+pokeId+'-nature');
 
         if(nature.val()) {
@@ -169,8 +177,9 @@ $(function() {
             var base = parseFloat(baseStats.find('.'+stat).val());
             var iv = parseInt(ivs.find('.'+stat).val());
             var ev = parseInt(evs.find('.'+stat).val());
+            var stage = stat !== 'hp' ? parseInt(stages.find('.'+stat).val()) : 0;
 
-            genStat(base, iv, ev, natureMod, parseFloat(level.val()), levelStats.eq(i));
+            genStat(base, iv, ev, stage, natureMod, parseFloat(level.val()), levelStats.eq(i));
         }
     }
 
@@ -199,6 +208,25 @@ $(function() {
             calculateStats(entry.attr('data-id'));
         }
     });
+
+    $('.stage-stat').on('change', function() {
+        var entry = $(this);
+        var val = entry.val();
+
+        if(val > 6) {
+            entry.val(6);
+        } else if (val < -6) {
+            entry.val(-6);
+        } else if(!entry.hasClass('critical')) {
+            calculateStats(entry.attr('data-id'));
+        }
+
+        if(entry.hasClass('critical') && val > 3) {
+            entry.val(3);
+        } else if(entry.hasClass('critical') && val < 0) {
+            entry.val(0);
+        }
+    })
 
     $('.level').change(function() {
         calculateStats($(this).attr('data-id'));
@@ -231,7 +259,7 @@ $(function() {
                     break;
                 case 'moves':
                     text = 'No move';
-                    addOptions($(display + ' .'+key), pokemon.stats[key], text);
+                    addOptions($(display + ' .'+key), pokemon[key], text);
                     break;
                 case 'types':
                     var types = $(display + ' .type');
@@ -247,9 +275,10 @@ $(function() {
         calculateStats(pokemon.form);
     }
 
-    function genStat(base, iv, ev, nature, level, input) {
+    function genStat(base, iv, ev, stage, nature, level, input) {
         var evCalc = ev ? ev/4.0 : 0;
-        var mod = {addBase: 0, addAll: 5, nature: 1}
+        var stages = {'-6':2/8.0, '-5':2/7.0, '-4':2/6.0, '-3':2/5.0, '-2':2/4.0, '-1':2/3.0, '0':1, '1':3/2.0, '2':4/2.0, '3':5/2.0, '4':6/2.0, '5':7/2.0, '6':8/2.0}
+        var mod = {addBase: 0, addAll: 5, nature: 1, stage: stages[stage]}
 
         switch(input.attr('name')) {
             case 'hp-level':
@@ -292,53 +321,180 @@ $(function() {
                 }
                 break;
         }
-        input.val(Math.floor((((((2*base) + iv + evCalc + mod.addBase)*level)/100) + mod.addAll)*mod.nature));
+        input.val(Math.floor((((((2 * base) + iv + evCalc + mod.addBase) * level)/100) + mod.addAll) * mod.nature * mod.stage));
     }
+
+    $('.trigger-display').hide();
 
     $('.moves').on('change', function() {
         var move = $(this);
         if(move.val()) {
-            move.next('.trigger').show();
+            move.parent().next('.trigger-display').show();
         } else {
-            move.next('.trigger').hide();
+            move.parent().next('.trigger-display').hide();
         }
     });
 
     $('.trigger').click(function() {
-        var trigger = $(this);
-        var move = $(this).prev('.moves');
-        var originId = trigger.attr('data-id');
-        var targetId = trigger.val();
+        var trigger = $(this).attr('data-move');
+        var move = $('#pokemon-'+trigger);
+        var originId = trigger.substring(0,trigger.indexOf('-'));
+        var targetId = $('#target-'+trigger).val().split('.');
+        var targetDbId = targetId[1];
+        targetId = targetId[0]
+
+        console.log("originId:",originId,'targetDbId:',targetDbId, 'targetId:', targetId);
+
+        var data = {
+            move: move.val(),
+            origin: {
+                name: $('#'+originId+' .pokemon-name').val(),
+                id: $('#pokemon-exist-'+originId).val(),
+                level: $('#pokemon-'+originId+'-level').val(),
+                hp: $('#pokemon-'+originId+'-level-stats .hp').val(),
+                attack: $('#pokemon-'+originId+'-level-stats .attack').val(),
+                defense: $('#pokemon-'+originId+'-level-stats .defense').val(),
+                sp_attack: $('#pokemon-'+originId+'-level-stats .sp_attack').val(),
+                sp_defense: $('#pokemon-'+originId+'-level-stats .sp_defense').val(),
+                speed: $('#pokemon-'+originId+'-level-stats .speed').val()
+            },
+            target: {
+                name: $('#'+targetId+' .pokemon-name').val(),
+                id: $('#pokemon-exist-'+targetId).val(),
+                hp: $('#pokemon-'+targetId+'-level-stats .hp').val(),
+                attack: $('#pokemon-'+targetId+'-level-stats .attack').val(),
+                defense: $('#pokemon-'+targetId+'-level-stats .defense').val(),
+                sp_attack: $('#pokemon-'+targetId+'-level-stats .sp_attack').val(),
+                sp_defense: $('#pokemon-'+targetId+'-level-stats .sp_defense').val(),
+                speed: $('#pokemon-'+targetId+'-level-stats .speed').val()
+            }
+        }
+
+        switch($('#pokemon-'+originId+'-stages .critical').val()) {
+            case '0':
+                data.origin.crit_chance = 16;
+                break;
+            case '1':
+                data.origin.crit_chance = 8;
+                break;
+            case '2':
+                data.origin.crit_chance = 2;
+                break;
+            case '3':
+                data.origin.crit_chance = 1;
+                break;
+            default:
+                data.origin.crit_chance = 16;
+                break;
+        }
+        switch($('#pokemon-'+originId+'-stages .accuracy').val()) {
+            case '-6':
+                data.origin.accuracy = 3/9.0;
+                break;
+            case '-5':
+                data.origin.accuracy = 3/8.0;
+                break;
+            case '-4':
+                data.origin.accuracy = 3/7.0;
+                break;
+            case '-3':
+                data.origin.accuracy = 3/6.0;
+                break;
+            case '-2':
+                data.origin.accuracy = 3/5.0;
+                break;
+            case '-1':
+                data.origin.accuracy = 3/4.0;
+                break;
+            case '0':
+                data.origin.accuracy = 3/3.0;
+                break;
+            case '1':
+                data.origin.accuracy = 4/3.0;
+                break;
+            case '2':
+                data.origin.accuracy = 5/3.0;
+                break;
+            case '3':
+                data.origin.accuracy = 6/3.0;
+                break;
+            case '4':
+                data.origin.accuracy = 7/3.0;
+                break;
+            case '5':
+                data.origin.accuracy = 8/3.0;
+                break;
+            case '6':
+                data.origin.accuracy = 9/3.0;
+                break;
+            default:
+                data.origin.accuracy = 1;
+                break;
+        }
+        switch($('#pokemon-'+targetId+'-stages .evasion').val()) {
+            case '-6':
+                data.target.evasion = 3/9.0;
+                break;
+            case '-5':
+                data.target.evasion = 3/8.0;
+                break;
+            case '-4':
+                data.target.evasion = 3/7.0;
+                break;
+            case '-3':
+                data.target.evasion = 3/6.0;
+                break;
+            case '-2':
+                data.target.evasion = 3/5.0;
+                break;
+            case '-1':
+                data.target.evasion = 3/4.0;
+                break;
+            case '0':
+                data.target.evasion = 3/3.0;
+                break;
+            case '1':
+                data.target.evasion = 4/3.0;
+                break;
+            case '2':
+                data.target.evasion = 5/3.0;
+                break;
+            case '3':
+                data.target.evasion = 6/3.0;
+                break;
+            case '4':
+                data.target.evasion = 7/3.0;
+                break;
+            case '5':
+                data.target.evasion = 8/3.0;
+                break;
+            case '6':
+                data.target.evasion = 9/3.0;
+                break;
+            default:
+                data.target.evasion = 1;
+                break;
+        }
+        console.log('DATA:',data)
 
         $.ajax({
             url: '/api/attack',
-            method: 'PUT',
-            data: {
-                move: move.val(),
-                origin: {
-                    name: $('#'+originId+' .pokemon-name').val(),
-                    id: $('#pokemon-exist-'+originId).val(),
-                    level: $('#pokemon-'+originId+'-level').val(),
-                    hp: $('#pokemon-'+originId+'-level-stats .hp').val(),
-                    attack: $('#pokemon-'+originId+'-level-stats .attack').val(),
-                    defense: $('#pokemon-'+originId+'-level-stats .defense').val(),
-                    sp_attack: $('#pokemon-'+originId+'-level-stats .sp_attack').val(),
-                    sp_defense: $('#pokemon-'+originId+'-level-stats .sp_defense').val(),
-                    speed: $('#pokemon-'+originId+'-level-stats .speed').val()
-                },
-                target: {
-                    name: $('#'+targetId+' .pokemon-name').val(),
-                    id: $('#pokemon-exist-'+targetId).val(),
-                    hp: $('#pokemon-'+targetId+'-level-stats .hp').val(),
-                    attack: $('#pokemon-'+targetId+'-level-stats .attack').val(),
-                    defense: $('#pokemon-'+targetId+'-level-stats .defense').val(),
-                    sp_attack: $('#pokemon-'+targetId+'-level-stats .sp_attack').val(),
-                    sp_defense: $('#pokemon-'+targetId+'-level-stats .sp_defense').val(),
-                    speed: $('#pokemon-'+targetId+'-level-stats .speed').val()
-                }
-            }
+            method: 'POST',
+            // contentType: 'application/json',
+            data: data,
+            dataType: 'json'
         }).done(function(result) {
-            alert(result.origin + ' used '+result.move+' against enemy '+result.target+' and '+result.result);
+            if(result.response) {
+                if(result.crit) {
+                    style = 'yellow';
+                } else if(result.result.indexOf('missed') !== -1) {
+                    style = 'red';
+                } else {
+                    style = 'green';
+                }
+
+                Materialize.toast(result.origin + ' used '+result.move+' against enemy '+result.target+' and '+result.result, 3000, style);
+            }
             console.log("ATTACK RESULT:",result);
         }).error(function(err) {
             console.log("ERROR:",err);
