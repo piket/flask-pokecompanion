@@ -254,11 +254,13 @@ def generate_pokemon(pokemon_name):
                         m = initMove(move['name'], move['resource_uri'])
                         if m:
                             pokemon.moves.append(m)
+                            print("Move created {}".format(m))
 
                 db.session.commit()
                 print("Pokemon model: {}".format(pokemon))
                 return pokemon
         else:
+            print("Pokemon found {}".format(pokemon))
             return pokemon
     else:
         return None

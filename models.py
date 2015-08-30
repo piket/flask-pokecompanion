@@ -20,7 +20,7 @@ class Pokemon(db.Model):
         self.stats = stats
 
     def __repr__(self):
-        return "<id {}>".format(self.id)
+        return "<name {} id {}>".format(self.name,self.id)
 
     def serialize(self):
         return {
@@ -50,7 +50,7 @@ class Nature(db.Model):
         self.penalty = penalty
 
     def __repr__(self):
-        return "<id {}>".format(self.id)
+        return "<name {} id {}>".format(self.name,self.id)
 
     def serialize(self):
         return {
@@ -94,7 +94,7 @@ class Move(db.Model):
         self.effect = effect
 
     def __repr__(self):
-        return "<id {}>".format(self.id)
+        return "<name {} id {}>".format(self.name,self.id)
 
     def serialize(self):
         return {
