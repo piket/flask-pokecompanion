@@ -12,9 +12,10 @@ def populate(arg):
         for poke in Pokemon.query.all():
             for move in poke.stats['moves']:
                 m = initMove(move['name'],move['resource_uri'])
-                if m and not m in poke.moves:
+                if m and not m.name in poke.get_moves():
                     poke.moves.append(m)
                     pokeList.append(poke)
+                    db.session.commit()
 
         print("COMPLETED:\n{}".format(pokeList))
     if '-a' in arg or '--all' in arg:
