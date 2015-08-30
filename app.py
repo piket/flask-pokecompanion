@@ -271,7 +271,7 @@ def index():
         pokeList.append(poke.text.lower())
 
     pokeList.sort()
-    natures = Nature.query.all()
+    natures = Nature.query.order_by(Nature.id)
     return render_template('display.html', pokeList=json.dumps(pokeList), natures=natures)
 
 
