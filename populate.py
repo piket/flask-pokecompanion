@@ -12,7 +12,7 @@ def populate(arg):
         for poke in Pokemon.query.all():
             for move in poke.stats['moves']:
                 m = initMove(move['name'],move['resource_uri'])
-                if not m in poke.moves:
+                if not m == None and not m in poke.moves:
                     poke.moves.append(m)
                     pokeList.append(poke)
 
