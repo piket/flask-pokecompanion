@@ -269,7 +269,7 @@ def generate_pokemon(pokemon_name):
                     'abilities': pullStats(pokestats['abilities']),
                     'gender_ratio': pokestats['male_female_ratio'],
                     'catch_rate': pokestats['catch_rate'],
-                    'moves': pullStats(pokestats['moves']),
+                    'moves': pokestats['moves'],
                 }
                 print("Stats: {}".format(stats))
                 pokemon = Pokemon(name=pokemon_name, stats=stats)
