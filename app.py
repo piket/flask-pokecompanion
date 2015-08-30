@@ -216,6 +216,7 @@ def typeMatchUp(move_type, target_types):
     return mod
 
 def generate_pokemon(pokemon_name):
+    print("\n****************************************************************\nBEGIN: GENERATE_POKEMON\n****************************************************************\n\n")
     pokemon_name = pokemon_name.lower()
     if(pokemon_name != ''):
         pokemon = Pokemon.query.filter_by(name=pokemon_name).first()
@@ -247,14 +248,20 @@ def generate_pokemon(pokemon_name):
                 db.session.add(pokemon)
 
                 for move in pokestats['moves']:
-                    m = Move.query.filter_by(name=move['name']).first()
+                    m = Move.query.filter_by(name=move['name'].title()).first()
                     if m:
+                        print("** {} found".format(m.name))
                         pokemon.moves.append(m)
                     else:
-                        m = initMove(move['name'], move['resource_uri'])
+                        m = Move.query.filter_by(name=move['name'].replace('-',' ').title()).first()
                         if m:
+                            print("** {} found".format(m.name))
                             pokemon.moves.append(m)
-                            print("Move created {}".format(m))
+                        else:
+                            m = initMove(move['name'], move['resource_uri'])
+                            if m:
+                                pokemon.moves.append(m)
+                                print("Move created: {}".format(m.name))
 
                 db.session.commit()
                 print("Pokemon model: {}".format(pokemon))
