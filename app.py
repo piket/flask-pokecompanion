@@ -45,6 +45,34 @@ def initMove(move, move_link):
             category = t.find('a',title=regCategory)
             if not move_type:
                 return False
+        elif 'beam' in m and not '_Beam' in m:
+            m = m.replace('beam','_Beam')
+            t = BeautifulSoup(requests.get('http://bulbapedia.bulbagarden.net/wiki/'+m+'_(move)').text, 'html.parser')
+            move_type = t.find('a', title=regType)
+            category = t.find('a',title=regCategory)
+            if not move_type:
+                return False
+        elif 'punch' in m and not '_Punch' in m:
+            m = m.replace('punch','_Punch')
+            t = BeautifulSoup(requests.get('http://bulbapedia.bulbagarden.net/wiki/'+m+'_(move)').text, 'html.parser')
+            move_type = t.find('a', title=regType)
+            category = t.find('a',title=regCategory)
+            if not move_type:
+                return False
+        elif 'powder' in m and not '_Powder' in m:
+            m = m.replace('powder','_Powder')
+            t = BeautifulSoup(requests.get('http://bulbapedia.bulbagarden.net/wiki/'+m+'_(move)').text, 'html.parser')
+            move_type = t.find('a', title=regType)
+            category = t.find('a',title=regCategory)
+            if not move_type:
+                return False
+        elif 'breath' in m and not '_Breath' in m:
+            m = m.replace('breath','_Breath')
+            t = BeautifulSoup(requests.get('http://bulbapedia.bulbagarden.net/wiki/'+m+'_(move)').text, 'html.parser')
+            move_type = t.find('a', title=regType)
+            category = t.find('a',title=regCategory)
+            if not move_type:
+                return False
         else:
             return False
 

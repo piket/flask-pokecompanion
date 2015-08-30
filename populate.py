@@ -1,12 +1,23 @@
 # import argparse
 import sys
-from app import generate_pokemon
+from app import generate_pokemon, initMove
 import requests
 from bs4 import BeautifulSoup
+from models import Pokemon
 
 def populate(arg):
 
-    if '-a' in arg:
+    if '-u' in arg or '--update' in arg:
+        pokeList = []
+        for poke in Pokemon.query.all():
+            for move in poke.stats['moves']:
+                m = initMove(move['name'],move['resource_uri'])
+                if not m in poke.moves:
+                    poke.moves.append(m)
+                    pokeList.append(poke)
+
+        print("COMPLETED:\n{}".format(pokeList))
+    if '-a' in arg or '--all' in arg:
         raw = BeautifulSoup(requests.get('http://bulbapedia.bulbagarden.net/wiki/List_of_Pokémon_by_name').text, 'html.parser')
         pokeList = []
         for poke in raw.find_all('a',title=re.compile('[a-zA-Z0-9_]+ \(Pokémon\)$')):
