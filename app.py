@@ -28,7 +28,7 @@ def pullStats(list):
 
 def initMove(move, move_link):
     m = move.title().replace(' ','_')
-    print(m)
+    # print(m)
     regType = re.compile('[a-zA-Z0-9_]+ \(type\)$')
     regCategory = re.compile('[a-zA-Z0-9_]+ move')
 
@@ -306,6 +306,8 @@ def generate_pokemon(pokemon_name):
                             if m:
                                 pokemon.moves.append(m)
                                 print("Move created: {}".format(m.name))
+                            else:
+                                print("-- Invalid move: {}".format(move['name']))
 
                 db.session.commit()
                 print("Pokemon model: {}".format(pokemon))
