@@ -265,11 +265,13 @@ def typeMatchUp(move_type, target_types):
 
 def generate_pokemon(pokemon_name):
     print("\n****************************************************************\nBEGIN: GENERATE_POKEMON\n****************************************************************\n\n")
-    pokemon_name = pokemon_name.lower().replace('♀','-f').replace('♂','-m')
+    pokemon_name = pokemon_name.lower()
+    search_name = pokemon_name
+
     if(pokemon_name != ''):
         pokemon = Pokemon.query.filter_by(name=pokemon_name).first()
         if pokemon is None:
-            json_data = requests.get('http://pokeapi.co/api/v1/pokemon/' + pokemon_name).text
+            json_data = requests.get('http://pokeapi.co/api/v1/pokemon/' + search_name.replace('♀','-f').replace('♂','-m')).text
 
             if json_data == '':
                 return None
