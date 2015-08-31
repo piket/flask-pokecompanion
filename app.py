@@ -265,7 +265,7 @@ def typeMatchUp(move_type, target_types):
 
 def generate_pokemon(pokemon_name):
     print("\n****************************************************************\nBEGIN: GENERATE_POKEMON\n****************************************************************\n\n")
-    pokemon_name = pokemon_name.lower()
+    pokemon_name = pokemon_name.lower().replace('♀','-f').replace('♂','-m')
     if(pokemon_name != ''):
         pokemon = Pokemon.query.filter_by(name=pokemon_name).first()
         if pokemon is None:
@@ -275,6 +275,9 @@ def generate_pokemon(pokemon_name):
                 return None
             else:
                 pokestats = json.loads(json_data)
+                if not 'name' in pokestats:
+                    return None
+
                 print("Pokestats: {}".format(pokestats))
                 stats = {
                     'hp': pokestats['hp'],
