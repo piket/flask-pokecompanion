@@ -47,7 +47,7 @@ def initMove(move, move_link):
                 return False
         elif 'beam' in m and not '_Beam' in m:
             m = m.replace('beam','_Beam')
-            existing = Move.query.filter_by(name=m).first()
+            existing = Move.query.filter_by(name=m.replace('_',' ')).first()
             if existing:
                 print('vv Move found, not created: {}'.format(existing))
                 return existing
@@ -59,7 +59,7 @@ def initMove(move, move_link):
                 return False
         elif 'punch' in m and not '_Punch' in m:
             m = m.replace('punch','_Punch')
-            existing = Move.query.filter_by(name=m).first()
+            existing = Move.query.filter_by(name=m.replace('_',' ')).first()
             if existing:
                 print('vv Move found, not created: {}'.format(existing))
                 return existing
@@ -71,7 +71,7 @@ def initMove(move, move_link):
                 return False
         elif 'powder' in m and not '_Powder' in m:
             m = m.replace('powder','_Powder')
-            existing = Move.query.filter_by(name=m).first()
+            existing = Move.query.filter_by(name=m.replace('_',' ')).first()
             if existing:
                 print('vv Move found, not created: {}'.format(existing))
                 return existing
@@ -83,7 +83,7 @@ def initMove(move, move_link):
                 return False
         elif 'breath' in m and not '_Breath' in m:
             m = m.replace('breath','_Breath')
-            existing = Move.query.filter_by(name=m).first()
+            existing = Move.query.filter_by(name=m.replace('_',' ')).first()
             if existing:
                 print('vv Move found, not created: {}'.format(existing))
                 return existing
