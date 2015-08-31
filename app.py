@@ -49,6 +49,7 @@ def initMove(move, move_link):
             m = m.replace('beam','_Beam')
             existing = Move.query.filter_by(name=m).first()
             if existing:
+                print('vv Move found, not created: {}'.format(existing))
                 return existing
 
             t = BeautifulSoup(requests.get('http://bulbapedia.bulbagarden.net/wiki/'+m+'_(move)').text, 'html.parser')
@@ -60,6 +61,7 @@ def initMove(move, move_link):
             m = m.replace('punch','_Punch')
             existing = Move.query.filter_by(name=m).first()
             if existing:
+                print('vv Move found, not created: {}'.format(existing))
                 return existing
 
             t = BeautifulSoup(requests.get('http://bulbapedia.bulbagarden.net/wiki/'+m+'_(move)').text, 'html.parser')
@@ -71,6 +73,7 @@ def initMove(move, move_link):
             m = m.replace('powder','_Powder')
             existing = Move.query.filter_by(name=m).first()
             if existing:
+                print('vv Move found, not created: {}'.format(existing))
                 return existing
 
             t = BeautifulSoup(requests.get('http://bulbapedia.bulbagarden.net/wiki/'+m+'_(move)').text, 'html.parser')
@@ -82,6 +85,7 @@ def initMove(move, move_link):
             m = m.replace('breath','_Breath')
             existing = Move.query.filter_by(name=m).first()
             if existing:
+                print('vv Move found, not created: {}'.format(existing))
                 return existing
 
             t = BeautifulSoup(requests.get('http://bulbapedia.bulbagarden.net/wiki/'+m+'_(move)').text, 'html.parser')
