@@ -4,7 +4,7 @@ from app import db
 from services import generate_pokemon, initMove
 import requests
 from bs4 import BeautifulSoup
-from models import Pokemon
+from models import Pokemon, Move
 
 def populate(arg):
 
@@ -13,7 +13,7 @@ def populate(arg):
         for poke in Pokemon.query.all():
             for move in poke.stats['moves']:
                 m = initMove(move['name'],move['resource_uri'])
-                if m and not m.name in poke.get_moves():
+                if isinstance(m,Move) and not m.name in poke.get_moves():
                     poke.moves.append(m)
                     pokeList.append(poke)
                     db.session.commit()
