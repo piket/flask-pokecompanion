@@ -179,7 +179,7 @@ def getBulbaData(move):
     regType = re.compile('[a-zA-Z0-9_]+ \(type\)$')
     regCategory = re.compile('[a-zA-Z0-9_]+ move')
 
-    t = requests.get('http://bulbapedia.bulbagarden.net/wiki/'+m+'_(move)').text
+    t = requests.get('http://bulbapedia.bulbagarden.net/wiki/'+move+'_(move)').text
     t = BeautifulSoup(t,'html.parser')
     move_type = t.find('a',title=regType)
     category = t.find('a',title=regCategory)
