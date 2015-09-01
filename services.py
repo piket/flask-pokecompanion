@@ -265,6 +265,9 @@ def initMove(move, move_link):
         else:
             return False
 
+    if isinstance(move_type,Move):
+        return move_type
+
     move_stats = json.loads(requests.get('http://pokeapi.co'+move_link).text)
     new_move = Move(name=m.replace('_',' '), type=move_type.text.strip(), category=category.text.strip(), power=move_stats['power'], accuracy=move_stats['accuracy'], pp=move_stats['pp'], effect=move_stats['description'])
     return new_move
