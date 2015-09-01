@@ -149,6 +149,9 @@ $(function() {
                 $.each($('.target').children(), function(i, option) {
                     val = $(option).val().split('.');
                     if(val[0] === pokemon.form) {
+                        if($(option).parent().val() === $(option).val()) {
+                            $(option).parent().val('')
+                        }
                         $(option).remove();
                     }
                 });
