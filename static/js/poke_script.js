@@ -486,7 +486,7 @@ $(function() {
         }).done(function(result) {
             if(result.response) {
                 if(result.crit) {
-                    style = 'yellow';
+                    style = 'yellow black-text';
                 } else if(result.result.indexOf('missed') !== -1) {
                     style = 'red';
                 } else {

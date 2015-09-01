@@ -90,7 +90,7 @@ def battle():
 
         mod = 1
 
-        if random() > 1/crit_chance:
+        if random() <= 1/crit_chance:
             result['crit'] = True
             mod = 1.5
 
