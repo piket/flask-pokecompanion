@@ -80,7 +80,8 @@ def battle():
             'target': data['target[name]'],
             'move': move.name,
             'response': True,
-            'crit': False
+            'crit': False,
+            'effective':1
         }
 
         hit = move.accuracy * (accuracy/evasion)
@@ -97,8 +98,11 @@ def battle():
         print("Crit? {} Mod: {}".format(result['crit'],mod))
 
         mod *= 1.5 if move.type in origin.stats['types'] else 1
-        mod *= typeMatchUp(move.type,target.stats['types'])
+        typeMod = typeMatchUp(move.type,target.stats['types'])
+        mod *= typeMod
         mod *= uniform(0.85,1)
+
+        result['effective'] = typeMod
 
         print("Category: {}".format(move.category))
 
