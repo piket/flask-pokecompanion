@@ -146,6 +146,12 @@ $(function() {
                 var pokemon = JSON.parse(result);
                 renderPokeStats(pokemon);
                 $('#pokemon-exist-'+pokemon.form).val(pokemon.id);
+                $.each($('.target').children(), function(i, option) {
+                    val = $(option).val().split('.');
+                    if(val[0] === pokemon.form) {
+                        $(option).remove();
+                    }
+                });
                 $('.target').append('<option value="'+pokemon.form+'.'+pokemon.id+'">'+pokemon.name[0].toUpperCase() + pokemon.name.substr(1)+'</option>');
             }).error(function(err) {
                 console.log("ERROR:",err);
