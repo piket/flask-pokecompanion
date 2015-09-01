@@ -1,8 +1,10 @@
 from app import db
 from models import *
 import re
+import requests
 import simplejson as json
 from bs4 import BeautifulSoup
+
 
 def typeMatchUp(move_type, target_types):
     match_up = {
