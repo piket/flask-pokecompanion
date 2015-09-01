@@ -1,6 +1,7 @@
 # import argparse
 import sys
-from app import db, generate_pokemon, initMove
+from app import db
+from services import generate_pokemon, initMove
 import requests
 from bs4 import BeautifulSoup
 from models import Pokemon
