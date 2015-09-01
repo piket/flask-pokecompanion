@@ -97,7 +97,7 @@ def battle():
 
         print("Crit? {} Mod: {}".format(result['crit'],mod))
 
-        mod *= 1.5 if move.type in origin.stats['types'] else 1
+        mod *= 1.5 if move.type.lower() in origin.stats['types'] else 1
         typeMod = typeMatchUp(move.type,target.stats['types'])
         mod *= typeMod
         mod *= uniform(0.85,1)
