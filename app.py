@@ -11,8 +11,8 @@ app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 db = SQLAlchemy(app)
 
-from models import *
 from services import *
+from models import *
 # import pykemon
 
 print(os.environ['APP_SETTINGS'])

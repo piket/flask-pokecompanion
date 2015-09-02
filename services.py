@@ -4,7 +4,10 @@ import re
 import requests
 import simplejson as json
 from bs4 import BeautifulSoup
+# import models
 
+# Pokemon = models.Pokemon
+# Move = models.Move
 
 def typeMatchUp(move_type, target_types):
     match_up = {
